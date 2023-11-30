@@ -23,9 +23,6 @@ function buildframework {
     (cd $PACKAGE_DIRECTORY && xcodebuild -scheme $1 -destination $2 -sdk $3 -configuration $CONFIGURATION -derivedDataPath "${FRAMEWORK_DIRECTORY}/.build" \
     	SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface" SYMROOT="$FRAMEWORK_DIRECTORY") || exit -1
 
-#     (cd $PACKAGE_DIRECTORY && xcodebuild archive -scheme $1 -destination $2 -sdk $3 -archivePath $1.xcarchive -configuration $CONFIGURATION \
-#     	SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS=-no-verify-emitted-module-interface ) || exit -1
-
    BUILD_PATH=$FRAMEWORK_DIRECTORY/${4}
    BUILD_FRAMEWORK_PATH=$BUILD_PATH/PackageFrameworks/${SCHEME}.framework/
    BUILD_FRAMEWORK_HEADERS=$BUILD_FRAMEWORK_PATH/Headers
