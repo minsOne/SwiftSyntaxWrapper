@@ -83,7 +83,7 @@ FRAMEWORK_DIRECTORY=`readlink -f $FRAMEWORK_RELATIVE_DIRECTORY`
 
 buildframework $SCHEME "generic/platform=iOS" "iphoneos"
 buildframework $SCHEME "generic/platform=iOS Simulator" "iphonesimulator"
-buildframework $SCHEME "generic/platform=MacOS" "macos"
+buildframework $SCHEME "generic/platform=MacOS" "macosx14.0"
 
 xcodebuild -create-xcframework \
         -framework "${FRAMEWORK_DIRECTORY}/${CONFIGURATION}-iphoneos/PackageFrameworks/${SCHEME}.framework" \
