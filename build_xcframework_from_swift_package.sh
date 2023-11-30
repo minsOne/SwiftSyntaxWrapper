@@ -26,12 +26,12 @@ function buildframework {
 #     (cd $PACKAGE_DIRECTORY && xcodebuild archive -scheme $1 -destination $2 -sdk $3 -archivePath $1.xcarchive -configuration $CONFIGURATION \
 #     	SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS=-no-verify-emitted-module-interface ) || exit -1
 
-   BUILD_PATH=$FRAMEWORK_DIRECTORY/${CONFIGURATION}-${3}
+   BUILD_PATH=$FRAMEWORK_DIRECTORY/${4}
    BUILD_FRAMEWORK_PATH=$BUILD_PATH/PackageFrameworks/${SCHEME}.framework/
    BUILD_FRAMEWORK_HEADERS=$BUILD_FRAMEWORK_PATH/Headers
 
    mkdir $BUILD_FRAMEWORK_HEADERS
-   SWIFT_HEADER="${FRAMEWORK_DIRECTORY}/.build/Build/Intermediates.noindex/$1.build/${CONFIGURATION}-${3}/$1.build/Objects-normal/arm64/${1}-Swift.h"
+   SWIFT_HEADER="${FRAMEWORK_DIRECTORY}/.build/Build/Intermediates.noindex/swift-syntax.build/${4}/$1.build/Objects-normal/arm64/${1}-Swift.h"
 
    if [ -f "$SWIFT_HEADER" ]
    then
@@ -40,12 +40,12 @@ function buildframework {
 
    # copy package headers (if any) to generated framework
    #
-   PACKAGE_INCLUDE_DIRS=$(find $PACKAGE_DIRECTORY -path "*/Sources/*/include" -type d)
+   # PACKAGE_INCLUDE_DIRS=$(find $PACKAGE_DIRECTORY -path "*/Sources/*/include" -type d)
 
-   if [ -n "$PACKAGE_INCLUDE_DIRS" ]
-   then
-       cp -prv $PACKAGE_DIRECTORY/Sources/*/include/* $BUILD_FRAMEWORK_HEADERS || exit -2
-   fi
+   # if [ -n "$PACKAGE_INCLUDE_DIRS" ]
+   # then
+   #     cp -prv $PACKAGE_DIRECTORY/Sources/*/include/* $BUILD_FRAMEWORK_HEADERS || exit -2
+   # fi
    
    # handle swiftmodule or modulemap file
    #
@@ -81,12 +81,12 @@ module * { export * }
 mkdir -p $FRAMEWORK_RELATIVE_DIRECTORY
 FRAMEWORK_DIRECTORY=`readlink -f $FRAMEWORK_RELATIVE_DIRECTORY`
 
-buildframework $SCHEME "generic/platform=iOS" "iphoneos"
-buildframework $SCHEME "generic/platform=iOS Simulator" "iphonesimulator"
-buildframework $SCHEME "generic/platform=MacOS" "macosx14.0"
+buildframework $SCHEME "generic/platform=iOS" "iphoneos" "${CONFIGURATION}-iphoneos"
+buildframework $SCHEME "generic/platform=iOS Simulator" "iphonesimulator" "${CONFIGURATION}-iphonesimulator"
+buildframework $SCHEME "generic/platform=MacOS" "macosx14.0" ${CONFIGURATION}
 
 xcodebuild -create-xcframework \
         -framework "${FRAMEWORK_DIRECTORY}/${CONFIGURATION}-iphoneos/PackageFrameworks/${SCHEME}.framework" \
         -framework "${FRAMEWORK_DIRECTORY}/${CONFIGURATION}-iphonesimulator/PackageFrameworks/${SCHEME}.framework" \
-        -framework "${FRAMEWORK_DIRECTORY}/${CONFIGURATION}-macos/PackageFrameworks/${SCHEME}.framework" \
+        -framework "${FRAMEWORK_DIRECTORY}/${CONFIGURATION}/PackageFrameworks/${SCHEME}.framework" \
         -output "${FRAMEWORK_DIRECTORY}/${SCHEME}.xcframework"
